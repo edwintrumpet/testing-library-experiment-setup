@@ -1,23 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react'
+
+import { rickFetch } from './services/rick'
 
 function App() {
+  const [loading, setLoading] = useState(false)
+  const [personaje, setPersonaje] = useState(undefined)
+  const [errors, setErrors] = useState(false)
+
+  const handleClick = async () => {
+    setLoading(true)
+    try{
+      const response = await rickFetch()
+      setPersonaje({name: response.name})
+    }catch(err){
+      setErrors(true)
+    }finally{
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <button data-testid="get-rick" disabled={loading} onClick={handleClick}>Enviar</button>
+      {personaje && <div>
+        <p>{personaje.name}</p>
+        </div>}
+      {errors && <p>Hubo un error</p>}
+      <button onClick={()=>console.log('enviando')}>Enviar</button>
     </div>
   );
 }
